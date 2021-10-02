@@ -38,9 +38,9 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
     /// uses a multi-dataset bar chart.
     ///
     /// The ````internal```` specifier is to allow subclasses (HorizontalBar) to populate the same array
-    internal lazy var accessibilityOrderedElements: [[NSUIAccessibilityElement]] = accessibilityCreateEmptyOrderedElements()
+    public lazy var accessibilityOrderedElements: [[NSUIAccessibilityElement]] = accessibilityCreateEmptyOrderedElements()
 
-    private typealias Buffer = [CGRect]
+    public typealias Buffer = [CGRect]
     
     @objc open weak var dataProvider: BarChartDataProvider?
     
@@ -52,7 +52,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
     }
     
     // [CGRect] per dataset
-    private var _buffers = [Buffer]()
+    public var _buffers = [Buffer]()
     
     open override func initBuffers()
     {
@@ -80,7 +80,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
         }
     }
     
-    private func prepareBuffer(dataSet: BarChartDataSetProtocol, index: Int)
+    public func prepareBuffer(dataSet: BarChartDataSetProtocol, index: Int)
     {
         guard
             let dataProvider = dataProvider,
@@ -750,14 +750,14 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
     }
 
     /// Sets the drawing position of the highlight object based on the given bar-rect.
-    internal func setHighlightDrawPos(highlight high: Highlight, barRect: CGRect)
+    func setHighlightDrawPos(highlight high: Highlight, barRect: CGRect)
     {
         high.setDraw(x: barRect.midX, y: barRect.origin.y)
     }
 
     /// Creates a nested array of empty subarrays each of which will be populated with NSUIAccessibilityElements.
     /// This is marked internal to support HorizontalBarChartRenderer as well.
-    internal func accessibilityCreateEmptyOrderedElements() -> [[NSUIAccessibilityElement]]
+    func accessibilityCreateEmptyOrderedElements() -> [[NSUIAccessibilityElement]]
     {
         guard let chart = dataProvider as? BarChartView else { return [] }
 
@@ -771,7 +771,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
     /// Creates an NSUIAccessibleElement representing the smallest meaningful bar of the chart
     /// i.e. in case of a stacked chart, this returns each stack, not the combined bar.
     /// Note that it is marked internal to support subclass modification in the HorizontalBarChart.
-    internal func createAccessibleElement(withIndex idx: Int,
+    public func createAccessibleElement(withIndex idx: Int,
                                           container: BarChartView,
                                           dataSet: BarChartDataSetProtocol,
                                           dataSetIndex: Int,

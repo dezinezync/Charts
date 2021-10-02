@@ -17,20 +17,12 @@ import CoreGraphics
 #endif
 
 
-open class HorizontalBarChartRenderer: BarChartRenderer
-{
-    private class Buffer
-    {
-        var rects = [CGRect]()
-    }
+open class HorizontalBarChartRenderer: BarChartRenderer {
     
     public override init(dataProvider: BarChartDataProvider, animator: Animator, viewPortHandler: ViewPortHandler)
     {
         super.init(dataProvider: dataProvider, animator: animator, viewPortHandler: viewPortHandler)
     }
-    
-    // [CGRect] per dataset
-    private var _buffers = [Buffer]()
     
     open override func initBuffers()
     {
@@ -53,9 +45,9 @@ open class HorizontalBarChartRenderer: BarChartRenderer
             {
                 let set = barData[i] as! BarChartDataSetProtocol
                 let size = set.entryCount * (set.isStacked ? set.stackSize : 1)
-                if _buffers[i].rects.count != size
+                if _buffers[i].count != size
                 {
-                    _buffers[i].rects = [CGRect](repeating: CGRect(), count: size)
+                    _buffers[i] = [CGRect](repeating: CGRect(), count: size)
                 }
             }
         }
@@ -65,7 +57,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
         }
     }
     
-    private func prepareBuffer(dataSet: BarChartDataSetProtocol, index: Int)
+    public override func prepareBuffer(dataSet: BarChartDataSetProtocol, index: Int)
     {
         guard let
             dataProvider = dataProvider,
@@ -74,7 +66,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
         
         let barWidthHalf = barData.barWidth / 2.0
         
-        let buffer = _buffers[index]
+        var buffer = _buffers[index]
         var bufferIndex = 0
         let containsStacks = dataSet.isStacked
         
@@ -119,7 +111,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                 barRect.origin.y = top
                 barRect.size.height = bottom - top
                 
-                buffer.rects[bufferIndex] = barRect
+                buffer[bufferIndex] = barRect
                 bufferIndex += 1
             }
             else
@@ -170,7 +162,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                     barRect.origin.y = top
                     barRect.size.height = bottom - top
                     
-                    buffer.rects[bufferIndex] = barRect
+                    buffer[bufferIndex] = barRect
                     bufferIndex += 1
                 }
             }
@@ -186,7 +178,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
         let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
         
         prepareBuffer(dataSet: dataSet, index: index)
-        trans.rectValuesToPixel(&_buffers[index].rects)
+        trans.rectValuesToPixel(&_buffers[index])
         
         let borderWidth = dataSet.barBorderWidth
         let borderColor = dataSet.barBorderColor
@@ -245,9 +237,9 @@ open class HorizontalBarChartRenderer: BarChartRenderer
         let isStacked = dataSet.isStacked
         let stackSize = isStacked ? dataSet.stackSize : 1
 
-        for j in buffer.rects.indices
+        for j in buffer.indices
         {
-            let barRect = buffer.rects[j]
+            let barRect = buffer[j]
             
             if (!viewPortHandler.isInBoundsTop(barRect.origin.y + barRect.size.height))
             {
@@ -362,7 +354,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                     {
                         guard let e = dataSet.entryForIndex(j) as? BarChartDataEntry else { continue }
                         
-                        let rect = buffer.rects[j]
+                        let rect = buffer[j]
                         
                         let y = rect.origin.y + rect.size.height / 2.0
                         
@@ -439,7 +431,7 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                     {
                         guard let e = dataSet.entryForIndex(index) as? BarChartDataEntry else { continue }
                         
-                        let rect = buffer.rects[bufferIndex]
+                        let rect = buffer[bufferIndex]
                         
                         let vals = e.yValues
                         

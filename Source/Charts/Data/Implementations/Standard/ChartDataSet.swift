@@ -478,4 +478,8 @@ extension ChartDataSet: RangeReplaceableCollection {
         entries.removeAll(keepingCapacity: keepCapacity)
         notifyDataSetChanged()
     }
+  
+  public func replaceSubrange<C>(_ subrange: Swift.Range<Int>, with newElements: C) where C : Collection, C.Element == ChartDataEntry {
+    entries.replaceSubrange(subrange, with: newElements)
+  }
 }
